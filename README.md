@@ -4,10 +4,12 @@ Prototype for reimplementing Storybook's test runner
 
 ## Running the demo
 
-- Test your storybook with: `pnpm test`
+- Install with: `pnpm install`
+- Test the storybook with: `pnpm test`
 
 ## Developing
 
+- Install with: `pnpm install`
 - Run unit tests with: `pnpm run vitest`
 - Run storybook with: `pnpm run storybook`
 - Test your storybook with: `pnpm test`
