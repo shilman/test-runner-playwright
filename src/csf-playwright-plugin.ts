@@ -126,8 +126,13 @@ export default function (babelContext: { types: BabelTypes }): PluginObj {
         exit(path, state: CustomState) {
           const { cwd, filename } = state;
           console.warn('transforming', { cwd, filename });
-          const title = state.title || relative(cwd, filename || join(cwd, 'default'));
-          console.log({ title });
+          // TODO: if we ever wanted to add global-setup from the "projects" field of playwright.config, we need to skip transforming it
+          // as it is treated as a test as well.
+          // if (filename === null || filename.includes('global.setup')) {
+          //     return;
+          // }
+          const title = state.title || relative(join(cwd, 'src'), filename || join(cwd, 'default')).replace(/\.stories\.(.*)?$/, '');
+          console.log({ title, });
           const body = Object.keys(state.namedExports!).map((name) => {
             const id = toId(title, name);
             return testTemplate({

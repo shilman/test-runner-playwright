@@ -1,18 +1,18 @@
-// Currently not used. Gets executed when uncommenting `globalSetup` in playwright.config
-import { chromium, type FullConfig } from "@playwright/test";
+// Currently not used. Gets executed when uncommenting `projects -> setup` section in playwright.config
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+import { test as setup } from "@playwright/test";
 
-console.log("Calling global setup...");
-async function globalSetup(config: FullConfig) {
+console.log("GLOBAL SETUP!!!");
+
+setup("setup test utils", async ({ page }) => {
+  console.log("set up script tags");
   const viewMode = process.env.VIEW_MODE || "story";
   const renderedEvent = viewMode === "docs" ? "docsRendered" : "storyRendered";
   const referenceURL = process.env.TARGET_URL || "http://127.0.0.1:6006";
   const targetURL = process.env.TARGET_URL || "http://127.0.0.1:6006";
   const testRunnerVersion = "1.0.0";
   const debugPrintLimit = 10000;
-
-  const browser = await chromium.launch();
-  const context = await browser.newContext();
-  const page = await context.newPage();
 
   const iframeURL = new URL("iframe.html", targetURL).toString();
 
@@ -24,10 +24,9 @@ async function globalSetup(config: FullConfig) {
 
     throw err;
   });
-
+  
   // if we ever want to log something from the browser to node
   // await page.exposeBinding('logToPage', (_, message) => console.log(message));
-  console.log("Setting up script tags...");
   await page.addScriptTag({
     content: `
       // colorizes the console output
@@ -305,6 +304,4 @@ async function globalSetup(config: FullConfig) {
       };
     `,
   });
-}
-
-export default globalSetup;
+});

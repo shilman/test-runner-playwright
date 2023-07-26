@@ -69,8 +69,13 @@ function default_1(babelContext) {
                 exit: function (path, state) {
                     var cwd = state.cwd, filename = state.filename;
                     console.warn('transforming', { cwd: cwd, filename: filename });
-                    var title = state.title || (0, path_1.relative)(cwd, filename || (0, path_1.join)(cwd, 'default'));
-                    console.log({ title: title });
+                    // TODO: if we ever wanted to add global-setup from the "projects" field of playwright.config, we need to skip transforming it
+                    // as it is treated as a test as well.
+                    // if (filename === null || filename.includes('global.setup')) {
+                    //     return;
+                    // }
+                    var title = state.title || (0, path_1.relative)((0, path_1.join)(cwd, 'src'), filename || (0, path_1.join)(cwd, 'default')).replace(/\.stories\.(.*)?$/, '');
+                    console.log({ title: title, });
                     var body = Object.keys(state.namedExports).map(function (name) {
                         var id = (0, csf_1.toId)(title, name);
                         return testTemplate({
