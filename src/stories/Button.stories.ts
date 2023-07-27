@@ -1,30 +1,18 @@
-import type { StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react';
 import { expect } from '@storybook/jest';
 import { Button } from './Button';
 
-// TODO: support meta as const
-// const meta = {
-//   // title: 'Example/Button',
-//   component: Button,
-//   tags: ['autodocs'],
-//   argTypes: {
-//     backgroundColor: { control: 'color' },
-//   },
-// } satisfies Meta<typeof Button>;
-// export default meta;
-// type Story = StoryObj<typeof meta>;
-
-export default {
+const meta = {
   title: 'Example/Button',
   component: Button,
   tags: ['autodocs'],
   argTypes: {
     backgroundColor: { control: 'color' },
   },
-};
-// TODO: support `as Meta` and `satisfies Meta`
+} satisfies Meta<typeof Button>;
+export default meta;
 
-type Story = StoryObj<typeof Button>;
+type Story = StoryObj<typeof meta>;
 
 export const Primary: Story = {
   args: {

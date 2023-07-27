@@ -12,7 +12,6 @@ export default {
     backgroundColor: { control: 'color' },
   },
 };
-// TODO: support `as Meta` and `satisfies Meta`
 
 type Story = StoryObj<typeof Button>;
 
