@@ -1,3 +1,4 @@
+import path from 'path';
 import { defineConfig, devices } from '@playwright/test';
 
 /**
@@ -10,8 +11,9 @@ import { defineConfig, devices } from '@playwright/test';
  * See https://playwright.dev/docs/test-configuration.
  */
 export default defineConfig({
-  testDir: './src/stories',
-  testMatch: '**/Button.stories.ts',
+  testDir: './src/',
+  testMatch: /Button.stories.ts/,
+  // globalSetup: require.resolve('./global.setup.ts'),
   /* Run tests in files in parallel */
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
@@ -33,21 +35,21 @@ export default defineConfig({
 
   /* Configure projects for major browsers */
   projects: [
+    // {
+    //   name: 'setup',
+    //   testMatch: /global.setup\.ts/,
+    // },
     {
-      name: 'setup',
-      testMatch: /global.setup\.ts/,
-    },
-    {
+      // dependencies: ['setup'],
       name: 'chromium',
       use: { ...devices['Desktop Chrome'], headless: false },
-      dependencies: ['setup'],
     },
   ],
 
   build: {
     // @ts-ignore
     babelPlugins: [
-      ['/Users/shilman/projects/storybookjs/test-runner-playwright/src/csf-plugin.cjs'],
+      [path.join(process.cwd(), 'src', 'csf-plugin.cjs')],
     ],
   },
 

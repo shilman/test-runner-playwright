@@ -7,3 +7,6 @@ yarn-error.log*
 lerna-debug.log*
 .pnpm-debug.log*
 node_modules
+
+csf-playwright-plugin.cjs
+test-results
