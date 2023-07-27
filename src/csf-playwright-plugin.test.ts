@@ -126,4 +126,32 @@ describe('csf-playwright-plugin', () => {
       });"
     `);
   });
+
+  it.only('manual title from meta var', () => {
+    const input = dedent`
+      import Button from './Button';
+      const meta = { component: Button, title: 'Example/Button' };
+      export default meta;
+      export const Default = {};
+    `;
+    const result = babel.transform(input, { plugins: [plugin] });
+    expect(result?.code).toMatchInlineSnapshot(`
+      "import { test } from \\"@playwright/test\\";
+      import { StoryPage } from \\"/Users/shilman/projects/storybookjs/test-runner-playwright/src/StoryPage\\";
+      test.describe(\\"Example/Button\\", () => {
+        test(\\"Default\\", async ({
+          page
+        }) => {
+          const context = {
+            id: \\"example-button--default\\",
+            title: \\"Example/Button\\",
+            name: \\"Default\\",
+            hasPlayFunction: false
+          };
+          const storyPage = new StoryPage(page);
+          await storyPage.test(context);
+        });
+      });"
+    `);
+  });
 });

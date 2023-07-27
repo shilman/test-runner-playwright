@@ -74,9 +74,17 @@ export default function (babelContext: { types: BabelTypes }): PluginObj {
   return {
     visitor: {
       ExportDefaultDeclaration: {
-        enter({ node }, state: CustomState) {
-          if (t.isObjectExpression(node.declaration)) {
-            const titleProp = node.declaration.properties.find(
+        enter(path, state: CustomState) {
+          const { node } = path;
+          let meta: T.Node = node.declaration;
+          if (t.isIdentifier(meta)) {
+            const binding = path.scope.getBinding(meta.name);
+            if (binding && t.isVariableDeclarator(binding.path.node)) {
+              meta = binding.path.node.init as T.Node;
+            }
+          }
+          if (t.isObjectExpression(meta)) {
+            const titleProp = meta.properties.find(
               (prop) =>
                 t.isObjectProperty(prop) && t.isIdentifier(prop.key) && prop.key.name === 'title'
             );
