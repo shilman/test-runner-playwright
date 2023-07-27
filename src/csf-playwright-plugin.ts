@@ -83,6 +83,9 @@ export default function (babelContext: { types: BabelTypes }): PluginObj {
               meta = binding.path.node.init as T.Node;
             }
           }
+          if (t.isTSSatisfiesExpression(meta) || t.isTSAsExpression(meta)) {
+            meta = meta.expression;
+          }
           if (t.isObjectExpression(meta)) {
             const titleProp = meta.properties.find(
               (prop) =>
@@ -139,8 +142,13 @@ export default function (babelContext: { types: BabelTypes }): PluginObj {
           // if (filename === null || filename.includes('global.setup')) {
           //     return;
           // }
-          const title = state.title || relative(join(cwd, 'src'), filename || join(cwd, 'default')).replace(/\.stories\.(.*)?$/, '');
-          console.log({ title, });
+          const title =
+            state.title ||
+            relative(join(cwd, 'src'), filename || join(cwd, 'default')).replace(
+              /\.stories\.(.*)?$/,
+              ''
+            );
+          console.log({ title });
           const body = Object.keys(state.namedExports!).map((name) => {
             const id = toId(title, name);
             return testTemplate({

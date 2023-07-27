@@ -154,4 +154,58 @@ describe('csf-playwright-plugin', () => {
       });"
     `);
   });
+
+  it('manual title w/ satisfies', () => {
+    const input = dedent`
+      import Button from './Button';
+      export default { component: Button, title: 'Example/Button' } satisfies Meta<typeof Button>;
+      export const Default = {};
+    `;
+    const result = babel.transform(input, { plugins: [plugin] });
+    expect(result?.code).toMatchInlineSnapshot(`
+      "import { test } from \\"@playwright/test\\";
+      import { StoryPage } from \\"/Users/shilman/projects/storybookjs/test-runner-playwright/src/StoryPage\\";
+      test.describe(\\"Example/Button\\", () => {
+        test(\\"Default\\", async ({
+          page
+        }) => {
+          const context = {
+            id: \\"example-button--default\\",
+            title: \\"Example/Button\\",
+            name: \\"Default\\",
+            hasPlayFunction: false
+          };
+          const storyPage = new StoryPage(page);
+          await storyPage.test(context);
+        });
+      });"
+    `);
+  });
+
+  it('manual title w/ as', () => {
+    const input = dedent`
+      import Button from './Button';
+      export default { component: Button, title: 'Example/Button' } as Meta<typeof Button>;
+      export const Default = {};
+    `;
+    const result = babel.transform(input, { plugins: [plugin] });
+    expect(result?.code).toMatchInlineSnapshot(`
+      "import { test } from \\"@playwright/test\\";
+      import { StoryPage } from \\"/Users/shilman/projects/storybookjs/test-runner-playwright/src/StoryPage\\";
+      test.describe(\\"Example/Button\\", () => {
+        test(\\"Default\\", async ({
+          page
+        }) => {
+          const context = {
+            id: \\"example-button--default\\",
+            title: \\"Example/Button\\",
+            name: \\"Default\\",
+            hasPlayFunction: false
+          };
+          const storyPage = new StoryPage(page);
+          await storyPage.test(context);
+        });
+      });"
+    `);
+  });
 });
