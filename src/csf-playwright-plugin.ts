@@ -2,7 +2,7 @@ import { relative, join } from 'path';
 import type { PluginObj, PluginPass } from '@babel/core';
 import type * as T from '@babel/types';
 import template from '@babel/template';
-import { toId } from '@storybook/csf';
+import { storyNameFromExport, toId } from '@storybook/csf';
 
 const describeTemplate = template(`
   test.describe(%%title%%, () => {
@@ -150,7 +150,7 @@ export default function (babelContext: { types: BabelTypes }): PluginObj {
             );
           console.log({ title });
           const body = Object.keys(state.namedExports!).map((name) => {
-            const id = toId(title, name);
+            const id = toId(title, storyNameFromExport(name));
             return testTemplate({
               id: t.stringLiteral(id),
               title: t.stringLiteral(title),

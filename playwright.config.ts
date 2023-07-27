@@ -12,7 +12,7 @@ import { defineConfig, devices } from '@playwright/test';
  */
 export default defineConfig({
   testDir: './src/',
-  testMatch: /Button.stories.ts/,
+  testMatch: /.stories.ts/,
   // globalSetup: require.resolve('./global.setup.ts'),
   /* Run tests in files in parallel */
   fullyParallel: true,
@@ -48,15 +48,13 @@ export default defineConfig({
 
   build: {
     // @ts-ignore
-    babelPlugins: [
-      [path.join(process.cwd(), 'src', 'csf-plugin.cjs')],
-    ],
+    babelPlugins: [[path.join(process.cwd(), 'src', 'csf-plugin.cjs')]],
   },
 
   /* Run your local dev server before starting the tests */
   webServer: {
     command: 'pnpm storybook',
     url: 'http://127.0.0.1:6006',
-    reuseExistingServer: false, //!process.env.CI,
+    reuseExistingServer: true, //!process.env.CI,
   },
 });

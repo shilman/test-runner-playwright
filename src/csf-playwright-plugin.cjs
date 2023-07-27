@@ -16,10 +16,20 @@ function default_1(babelContext) {
     return {
         visitor: {
             ExportDefaultDeclaration: {
-                enter: function (_a, state) {
-                    var node = _a.node;
-                    if (t.isObjectExpression(node.declaration)) {
-                        var titleProp = node.declaration.properties.find(function (prop) {
+                enter: function (path, state) {
+                    var node = path.node;
+                    var meta = node.declaration;
+                    if (t.isIdentifier(meta)) {
+                        var binding = path.scope.getBinding(meta.name);
+                        if (binding && t.isVariableDeclarator(binding.path.node)) {
+                            meta = binding.path.node.init;
+                        }
+                    }
+                    if (t.isTSSatisfiesExpression(meta) || t.isTSAsExpression(meta)) {
+                        meta = meta.expression;
+                    }
+                    if (t.isObjectExpression(meta)) {
+                        var titleProp = meta.properties.find(function (prop) {
                             return t.isObjectProperty(prop) && t.isIdentifier(prop.key) && prop.key.name === 'title';
                         });
                         if (t.isObjectProperty(titleProp) && t.isStringLiteral(titleProp.value)) {
@@ -74,10 +84,11 @@ function default_1(babelContext) {
                     // if (filename === null || filename.includes('global.setup')) {
                     //     return;
                     // }
-                    var title = state.title || (0, path_1.relative)((0, path_1.join)(cwd, 'src'), filename || (0, path_1.join)(cwd, 'default')).replace(/\.stories\.(.*)?$/, '');
-                    console.log({ title: title, });
+                    var title = state.title ||
+                        (0, path_1.relative)((0, path_1.join)(cwd, 'src'), filename || (0, path_1.join)(cwd, 'default')).replace(/\.stories\.(.*)?$/, '');
+                    console.log({ title: title });
                     var body = Object.keys(state.namedExports).map(function (name) {
-                        var id = (0, csf_1.toId)(title, name);
+                        var id = (0, csf_1.toId)(title, (0, csf_1.storyNameFromExport)(name));
                         return testTemplate({
                             id: t.stringLiteral(id),
                             title: t.stringLiteral(title),

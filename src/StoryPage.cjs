@@ -4,24 +4,24 @@ function sleep(ms) {
 
 // TODO: supposed to be somewhere else, in a "pre" test file
 const setup = async ({ page }) => {
-  const viewMode = process.env.VIEW_MODE || "story";
-  const renderedEvent = viewMode === "docs" ? "docsRendered" : "storyRendered";
-  const referenceURL = process.env.TARGET_URL || "http://127.0.0.1:6006";
-  const targetURL = process.env.TARGET_URL || "http://127.0.0.1:6006";
-  const testRunnerVersion = "1.0.0";
+  const viewMode = process.env.VIEW_MODE || 'story';
+  const renderedEvent = viewMode === 'docs' ? 'docsRendered' : 'storyRendered';
+  const referenceURL = process.env.TARGET_URL || 'http://127.0.0.1:6006';
+  const targetURL = process.env.TARGET_URL || 'http://127.0.0.1:6006';
+  const testRunnerVersion = '1.0.0';
   const debugPrintLimit = 10000;
 
-  const iframeURL = new URL("iframe.html", targetURL).toString();
+  const iframeURL = new URL('iframe.html', targetURL).toString();
 
-  await page.goto(iframeURL, { waitUntil: "load" }).catch((err) => {
-    if (err.message?.includes("ERR_CONNECTION_REFUSED")) {
+  await page.goto(iframeURL, { waitUntil: 'load' }).catch((err) => {
+    if (err.message?.includes('ERR_CONNECTION_REFUSED')) {
       const errorMessage = `Could not access the Storybook instance at ${targetURL}. Are you sure it's running?\n\n${err.message}`;
       throw new Error(errorMessage);
     }
 
     throw err;
   });
-  
+
   // if we ever want to log something from the browser to node
   // await page.exposeBinding('logToPage', (_, message) => console.log(message));
   await page.addScriptTag({
@@ -188,9 +188,7 @@ const setup = async ({ page }) => {
         constructor(storyId, errorMessage, logs = []) {
           super(errorMessage);
           this.name = 'StorybookTestRunnerError';
-          const storyUrl = \`${
-            referenceURL || targetURL
-          }?path=/story/\${storyId}\`;
+          const storyUrl = \`${referenceURL || targetURL}?path=/story/\${storyId}\`;
           const finalStoryUrl = \`\${storyUrl}&addonPanel=storybook/interactions/panel\`;
           const separator = '\\n\\n--------------------------------------------------';
           const extraLogs = logs.length > 0 ? separator + "\\n\\nBrowser logs:\\n\\n"+ logs.join('\\n\\n') : '';
@@ -300,8 +298,8 @@ const setup = async ({ page }) => {
         });
       };
     `,
-  })
-}
+  });
+};
 
 class StoryPage {
   constructor(page) {
@@ -317,10 +315,16 @@ class StoryPage {
      */
     await setup({ page: this.page });
     this.page.on('pageerror', (err) => {
-      this.page.evaluate(({ id, err }) => __throwError(id, err), { id: context.id, err: err.message });
+      this.page.evaluate(({ id, err }) => __throwError(id, err), {
+        id: context.id,
+        err: err.message,
+      });
     });
-    await this.page.evaluate(({ id, hasPlayFn }) => __test(id, hasPlayFn), context);
-    // await sleep(10000000);
+    try {
+      await this.page.evaluate(({ id, hasPlayFn }) => __test(id, hasPlayFn), context);
+    } finally {
+      // await sleep(10000000);
+    }
   }
 }
 

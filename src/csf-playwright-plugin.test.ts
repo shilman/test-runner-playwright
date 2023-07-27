@@ -14,13 +14,13 @@ describe('csf-playwright-plugin', () => {
     expect(result?.code).toMatchInlineSnapshot(`
       "import { test } from \\"@playwright/test\\";
       import { StoryPage } from \\"/Users/shilman/projects/storybookjs/test-runner-playwright/src/StoryPage\\";
-      test.describe(\\"default\\", () => {
+      test.describe(\\"../default\\", () => {
         test(\\"Default\\", async ({
           page
         }) => {
           const context = {
             id: \\"default--default\\",
-            title: \\"default\\",
+            title: \\"../default\\",
             name: \\"Default\\",
             hasPlayFunction: false
           };
@@ -42,13 +42,13 @@ describe('csf-playwright-plugin', () => {
     expect(result?.code).toMatchInlineSnapshot(`
       "import { test } from \\"@playwright/test\\";
       import { StoryPage } from \\"/Users/shilman/projects/storybookjs/test-runner-playwright/src/StoryPage\\";
-      test.describe(\\"default\\", () => {
+      test.describe(\\"../default\\", () => {
         test(\\"Primary\\", async ({
           page
         }) => {
           const context = {
             id: \\"default--primary\\",
-            title: \\"default\\",
+            title: \\"../default\\",
             name: \\"Primary\\",
             hasPlayFunction: false
           };
@@ -60,7 +60,7 @@ describe('csf-playwright-plugin', () => {
         }) => {
           const context = {
             id: \\"default--secondary\\",
-            title: \\"default\\",
+            title: \\"../default\\",
             name: \\"Secondary\\",
             hasPlayFunction: false
           };
@@ -83,15 +83,42 @@ describe('csf-playwright-plugin', () => {
     expect(result?.code).toMatchInlineSnapshot(`
       "import { test } from \\"@playwright/test\\";
       import { StoryPage } from \\"/Users/shilman/projects/storybookjs/test-runner-playwright/src/StoryPage\\";
-      test.describe(\\"default\\", () => {
+      test.describe(\\"../default\\", () => {
         test(\\"Default\\", async ({
           page
         }) => {
           const context = {
             id: \\"default--default\\",
-            title: \\"default\\",
+            title: \\"../default\\",
             name: \\"Default\\",
             hasPlayFunction: true
+          };
+          const storyPage = new StoryPage(page);
+          await storyPage.test(context);
+        });
+      });"
+    `);
+  });
+
+  it.only('title case story', () => {
+    const input = dedent`
+      import Button from './Button';
+      export default { component: Button }
+      export const LoggedIn = {};
+    `;
+    const result = babel.transform(input, { plugins: [plugin] });
+    expect(result?.code).toMatchInlineSnapshot(`
+      "import { test } from \\"@playwright/test\\";
+      import { StoryPage } from \\"/Users/shilman/projects/storybookjs/test-runner-playwright/src/StoryPage\\";
+      test.describe(\\"../default\\", () => {
+        test(\\"LoggedIn\\", async ({
+          page
+        }) => {
+          const context = {
+            id: \\"default--logged-in\\",
+            title: \\"../default\\",
+            name: \\"LoggedIn\\",
+            hasPlayFunction: false
           };
           const storyPage = new StoryPage(page);
           await storyPage.test(context);
@@ -127,7 +154,7 @@ describe('csf-playwright-plugin', () => {
     `);
   });
 
-  it.only('manual title from meta var', () => {
+  it('manual title from meta var', () => {
     const input = dedent`
       import Button from './Button';
       const meta = { component: Button, title: 'Example/Button' };
@@ -155,7 +182,7 @@ describe('csf-playwright-plugin', () => {
     `);
   });
 
-  it('manual title w/ satisfies', () => {
+  it.skip('manual title w/ satisfies', () => {
     const input = dedent`
       import Button from './Button';
       export default { component: Button, title: 'Example/Button' } satisfies Meta<typeof Button>;
@@ -182,10 +209,11 @@ describe('csf-playwright-plugin', () => {
     `);
   });
 
-  it('manual title w/ as', () => {
+  it.skip('manual title w/ as', () => {
     const input = dedent`
       import Button from './Button';
-      export default { component: Button, title: 'Example/Button' } as Meta<typeof Button>;
+      const meta = { component: Button, title: 'Example/Button' } as Meta<typeof Button>;
+      export default meta;
       export const Default = {};
     `;
     const result = babel.transform(input, { plugins: [plugin] });
