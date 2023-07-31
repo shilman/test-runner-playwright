@@ -14,15 +14,14 @@ describe('csf-playwright-plugin', () => {
     expect(result?.code).toMatchInlineSnapshot(`
       "import { test } from \\"@playwright/test\\";
       import { StoryPage } from \\"/Users/shilman/projects/storybookjs/test-runner-playwright/src/StoryPage\\";
-      test.describe(\\"../default\\", () => {
+      test.describe(\\"default\\", () => {
         test(\\"Default\\", async ({
           page
         }) => {
           const context = {
             id: \\"default--default\\",
-            title: \\"../default\\",
-            name: \\"Default\\",
-            hasPlayFunction: false
+            title: \\"default\\",
+            name: \\"Default\\"
           };
           const storyPage = new StoryPage(page);
           await storyPage.test(context);
@@ -42,15 +41,14 @@ describe('csf-playwright-plugin', () => {
     expect(result?.code).toMatchInlineSnapshot(`
       "import { test } from \\"@playwright/test\\";
       import { StoryPage } from \\"/Users/shilman/projects/storybookjs/test-runner-playwright/src/StoryPage\\";
-      test.describe(\\"../default\\", () => {
+      test.describe(\\"default\\", () => {
         test(\\"Primary\\", async ({
           page
         }) => {
           const context = {
             id: \\"default--primary\\",
-            title: \\"../default\\",
-            name: \\"Primary\\",
-            hasPlayFunction: false
+            title: \\"default\\",
+            name: \\"Primary\\"
           };
           const storyPage = new StoryPage(page);
           await storyPage.test(context);
@@ -60,9 +58,8 @@ describe('csf-playwright-plugin', () => {
         }) => {
           const context = {
             id: \\"default--secondary\\",
-            title: \\"../default\\",
-            name: \\"Secondary\\",
-            hasPlayFunction: false
+            title: \\"default\\",
+            name: \\"Secondary\\"
           };
           const storyPage = new StoryPage(page);
           await storyPage.test(context);
@@ -83,15 +80,14 @@ describe('csf-playwright-plugin', () => {
     expect(result?.code).toMatchInlineSnapshot(`
       "import { test } from \\"@playwright/test\\";
       import { StoryPage } from \\"/Users/shilman/projects/storybookjs/test-runner-playwright/src/StoryPage\\";
-      test.describe(\\"../default\\", () => {
+      test.describe(\\"default\\", () => {
         test(\\"Default\\", async ({
           page
         }) => {
           const context = {
             id: \\"default--default\\",
-            title: \\"../default\\",
-            name: \\"Default\\",
-            hasPlayFunction: true
+            title: \\"default\\",
+            name: \\"Default\\"
           };
           const storyPage = new StoryPage(page);
           await storyPage.test(context);
@@ -100,7 +96,7 @@ describe('csf-playwright-plugin', () => {
     `);
   });
 
-  it.only('title case story', () => {
+  it('title case story', () => {
     const input = dedent`
       import Button from './Button';
       export default { component: Button }
@@ -110,15 +106,14 @@ describe('csf-playwright-plugin', () => {
     expect(result?.code).toMatchInlineSnapshot(`
       "import { test } from \\"@playwright/test\\";
       import { StoryPage } from \\"/Users/shilman/projects/storybookjs/test-runner-playwright/src/StoryPage\\";
-      test.describe(\\"../default\\", () => {
-        test(\\"LoggedIn\\", async ({
+      test.describe(\\"default\\", () => {
+        test(\\"Logged In\\", async ({
           page
         }) => {
           const context = {
             id: \\"default--logged-in\\",
-            title: \\"../default\\",
-            name: \\"LoggedIn\\",
-            hasPlayFunction: false
+            title: \\"default\\",
+            name: \\"Logged In\\"
           };
           const storyPage = new StoryPage(page);
           await storyPage.test(context);
@@ -144,8 +139,7 @@ describe('csf-playwright-plugin', () => {
           const context = {
             id: \\"example-button--default\\",
             title: \\"Example/Button\\",
-            name: \\"Default\\",
-            hasPlayFunction: false
+            name: \\"Default\\"
           };
           const storyPage = new StoryPage(page);
           await storyPage.test(context);
@@ -172,8 +166,7 @@ describe('csf-playwright-plugin', () => {
           const context = {
             id: \\"example-button--default\\",
             title: \\"Example/Button\\",
-            name: \\"Default\\",
-            hasPlayFunction: false
+            name: \\"Default\\"
           };
           const storyPage = new StoryPage(page);
           await storyPage.test(context);

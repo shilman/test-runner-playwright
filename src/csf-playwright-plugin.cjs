@@ -2,9 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var path_1 = require("path");
 var template_1 = require("@babel/template");
-var csf_1 = require("@storybook/csf");
+var csf_tools_1 = require("@storybook/csf-tools");
 var describeTemplate = (0, template_1.default)("\n  test.describe(%%title%%, () => {\n    %%body%%\n  });\n");
-var testTemplate = (0, template_1.default)("\n  test(%%name%%, async ({ page }) => {\n    const context = { id: %%id%%, title: %%title%%, name: %%name%%, hasPlayFunction: %%hasPlayFunction%% };\n    const storyPage = new StoryPage(page);\n    await storyPage.test(context);\n  });\n");
+var testTemplate = (0, template_1.default)("\n  test(%%name%%, async ({ page }) => {\n    const context = { id: %%id%%, title: %%title%%, name: %%name%% };\n    const storyPage = new StoryPage(page);\n    await storyPage.test(context);\n  });\n");
 var makePlaywrightImport = function (t) {
     return t.importDeclaration([t.importSpecifier(t.identifier('test'), t.identifier('test'))], t.stringLiteral('@playwright/test'));
 };
@@ -78,22 +78,42 @@ function default_1(babelContext) {
                 },
                 exit: function (path, state) {
                     var cwd = state.cwd, filename = state.filename;
-                    console.warn('transforming', { cwd: cwd, filename: filename });
-                    // TODO: if we ever wanted to add global-setup from the "projects" field of playwright.config, we need to skip transforming it
-                    // as it is treated as a test as well.
-                    // if (filename === null || filename.includes('global.setup')) {
-                    //     return;
-                    // }
-                    var title = state.title ||
-                        (0, path_1.relative)((0, path_1.join)(cwd, 'src'), filename || (0, path_1.join)(cwd, 'default')).replace(/\.stories\.(.*)?$/, '');
+                    // @ts-expect-error parent file is not typed
+                    var csf = new csf_tools_1.CsfFile(path.parent, {
+                        fileName: filename,
+                        makeTitle: function (userTitle) { return userTitle || 'default'; },
+                    }).parse();
+                    // console.warn('transforming', { cwd, filename });
+                    // // TODO: if we ever wanted to add global-setup from the "projects" field of playwright.config, we need to skip transforming it
+                    // // as it is treated as a test as well.
+                    // // if (filename === null || filename.includes('global.setup')) {
+                    // //     return;
+                    // // }
+                    // const title =
+                    //   state.title ||
+                    //   relative(join(cwd, 'src'), filename || join(cwd, 'default')).replace(
+                    //     /\.stories\.(.*)?$/,
+                    //     ''
+                    //   );
+                    // console.log({ title });
+                    // const body = Object.keys(state.namedExports!).map((name) => {
+                    //   const id = toId(title, storyNameFromExport(name));
+                    //   return testTemplate({
+                    //     id: t.stringLiteral(id),
+                    //     title: t.stringLiteral(title),
+                    //     name: t.stringLiteral(name),
+                    //     hasPlayFunction: t.booleanLiteral(state.namedExports![name]),
+                    //   });
+                    // });
+                    var title = csf.meta.title;
                     console.log({ title: title });
-                    var body = Object.keys(state.namedExports).map(function (name) {
-                        var id = (0, csf_1.toId)(title, (0, csf_1.storyNameFromExport)(name));
+                    var body = csf.stories.map(function (story) {
+                        var id = story.id;
+                        var name = story.name;
                         return testTemplate({
                             id: t.stringLiteral(id),
                             title: t.stringLiteral(title),
                             name: t.stringLiteral(name),
-                            hasPlayFunction: t.booleanLiteral(state.namedExports[name]),
                         });
                     });
                     path.node.body = [
