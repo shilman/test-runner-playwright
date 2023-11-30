@@ -15,96 +15,18 @@ function default_1(babelContext) {
     var t = babelContext.types;
     return {
         visitor: {
-            ExportDefaultDeclaration: {
-                enter: function (path, state) {
-                    var node = path.node;
-                    var meta = node.declaration;
-                    if (t.isIdentifier(meta)) {
-                        var binding = path.scope.getBinding(meta.name);
-                        if (binding && t.isVariableDeclarator(binding.path.node)) {
-                            meta = binding.path.node.init;
-                        }
-                    }
-                    if (t.isTSSatisfiesExpression(meta) || t.isTSAsExpression(meta)) {
-                        meta = meta.expression;
-                    }
-                    if (t.isObjectExpression(meta)) {
-                        var titleProp = meta.properties.find(function (prop) {
-                            return t.isObjectProperty(prop) && t.isIdentifier(prop.key) && prop.key.name === 'title';
-                        });
-                        if (t.isObjectProperty(titleProp) && t.isStringLiteral(titleProp.value)) {
-                            state.title = titleProp.value.value;
-                        }
-                    }
-                },
-            },
-            ExportNamedDeclaration: {
-                enter: function (_a, state) {
-                    var node = _a.node;
-                    var declarations;
-                    if (t.isVariableDeclaration(node.declaration)) {
-                        declarations = node.declaration.declarations.filter(function (d) { return t.isVariableDeclarator(d); });
-                    }
-                    else if (t.isFunctionDeclaration(node.declaration)) {
-                        declarations = [node.declaration];
-                    }
-                    if (declarations) {
-                        // export const X = ...;
-                        declarations.forEach(function (decl) {
-                            if (t.isVariableDeclarator(decl)) {
-                                if (t.isIdentifier(decl.id)) {
-                                    var exportName = decl.id.name;
-                                    var hasPlayFunction = false;
-                                    if (t.isObjectExpression(decl.init)) {
-                                        var play = decl.init.properties.find(function (prop) {
-                                            return t.isObjectProperty(prop) &&
-                                                t.isIdentifier(prop.key) &&
-                                                prop.key.name === 'play';
-                                        });
-                                        hasPlayFunction = !!play;
-                                    }
-                                    state.namedExports[exportName] = hasPlayFunction;
-                                }
-                            }
-                        });
-                    }
-                    // FIXME: copy full logic from CsfFile
-                    return false;
-                },
-            },
             Program: {
-                enter: function (_path, state) {
-                    state.namedExports = {};
-                },
-                exit: function (path, state) {
-                    var cwd = state.cwd, filename = state.filename;
+                enter: function (path, state) {
+                    var filename = state.filename;
+                    // FIXME: this makes use of a loophole that both
+                    // CsfFile and Playwright Test are using babel!
+                    // In the future, this probably won't be the case.
+                    //
                     // @ts-expect-error parent file is not typed
                     var csf = new csf_tools_1.CsfFile(path.parent, {
                         fileName: filename,
                         makeTitle: function (userTitle) { return userTitle || 'default'; },
                     }).parse();
-                    // console.warn('transforming', { cwd, filename });
-                    // // TODO: if we ever wanted to add global-setup from the "projects" field of playwright.config, we need to skip transforming it
-                    // // as it is treated as a test as well.
-                    // // if (filename === null || filename.includes('global.setup')) {
-                    // //     return;
-                    // // }
-                    // const title =
-                    //   state.title ||
-                    //   relative(join(cwd, 'src'), filename || join(cwd, 'default')).replace(
-                    //     /\.stories\.(.*)?$/,
-                    //     ''
-                    //   );
-                    // console.log({ title });
-                    // const body = Object.keys(state.namedExports!).map((name) => {
-                    //   const id = toId(title, storyNameFromExport(name));
-                    //   return testTemplate({
-                    //     id: t.stringLiteral(id),
-                    //     title: t.stringLiteral(title),
-                    //     name: t.stringLiteral(name),
-                    //     hasPlayFunction: t.booleanLiteral(state.namedExports![name]),
-                    //   });
-                    // });
                     var title = csf.meta.title;
                     console.log({ title: title });
                     var body = csf.stories.map(function (story) {

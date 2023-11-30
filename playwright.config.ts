@@ -10,6 +10,7 @@ import { defineConfig, devices } from '@playwright/test';
 /**
  * See https://playwright.dev/docs/test-configuration.
  */
+// @ts-expect-error use _contextReuseMode
 export default defineConfig({
   testDir: './src/',
   testMatch: /.stories.ts/,
@@ -31,6 +32,7 @@ export default defineConfig({
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
+    _contextReuseMode: 'when-possible',
   },
 
   /* Configure projects for major browsers */

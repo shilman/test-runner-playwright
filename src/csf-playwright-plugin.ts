@@ -41,6 +41,10 @@ export default function (babelContext: { types: BabelTypes }): PluginObj {
       Program: {
         enter(path, state) {
           const { filename } = state;
+          // FIXME: this makes use of a loophole that both
+          // CsfFile and Playwright Test are using babel!
+          // In the future, this probably won't be the case.
+          //
           // @ts-expect-error parent file is not typed
           const csf = new CsfFile(path.parent, {
             fileName: filename, // || join(cwd, 'default'),
